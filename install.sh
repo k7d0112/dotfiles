@@ -36,5 +36,26 @@ if [ -f "$HOME/.zshrc" ]; then
   source "$HOME/.zshrc"
 fi
 
+# ------------------------------
+# Starship setup
+# ------------------------------
+
+# Homebrew が使えるかチェック
+if ! command -v brew &> /dev/null; then
+  echo "Homebrew is not installed. Please install Homebrew first."
+  exit 1
+fi
+
+# starship が未インストールの場合のみインストール
+if ! command -v starship &> /dev/null; then
+  echo "Installing starship..."
+  brew install starship
+fi
+
+# 設定ファイルのシンボリックリンク作成
+echo "Linking starship config..."
+mkdir -p ~/.config
+ln -sf ~/workspace/dotfiles/.config/starship.toml ~/.config/starship.toml
+
 echo "== done =="
 ```
