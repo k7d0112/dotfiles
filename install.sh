@@ -37,14 +37,17 @@ if [ -f "$HOME/.zshrc" ]; then
 fi
 
 # ------------------------------
-# Starship setup
+# Prerequisite check
 # ------------------------------
 
-# Homebrew が使えるかチェック
 if ! command -v brew &> /dev/null; then
   echo "Homebrew is not installed. Please install Homebrew first."
   exit 1
 fi
+
+# ------------------------------
+# Starship setup
+# ------------------------------
 
 # starship が未インストールの場合のみインストール
 if ! command -v starship &> /dev/null; then
@@ -54,8 +57,43 @@ fi
 
 # 設定ファイルのシンボリックリンク作成
 echo "Linking starship config..."
+
 mkdir -p ~/.config
-ln -sf ~/workspace/dotfiles/.config/starship.toml ~/.config/starship.toml
+
+TARGET="$HOME/.config/starship.toml"
+SOURCE="$DOTFILES_DIR/.config/starship.toml"
+
+if [ -e "$TARGET" ] && [ ! -L "$TARGET" ]; then
+  echo "Backing up starship config"
+  mv "$TARGET" "$TARGET.backup"
+fi
+
+ln -snf "$SOURCE" "$TARGET"
+
+# ------------------------------
+# WezTerm setup
+# ------------------------------
+
+# WezTerm が未インストールの場合のみインストール
+if ! command -v wezterm &> /dev/null; then
+  echo "Installing WezTerm nightly..."
+  brew install --cask wezterm@nightly
+fi
+
+# 設定ファイルのシンボリックリンク作成
+echo "Linking WezTerm config..."
+
+mkdir -p ~/.config
+
+TARGET="$HOME/.config/wezterm"
+SOURCE="$DOTFILES_DIR/.config/wezterm"
+
+if [ -e "$TARGET" ] && [ ! -L "$TARGET" ]; then
+  echo "Backing up wezterm config"
+  mv "$TARGET" "$TARGET.backup"
+fi
+
+ln -snf "$SOURCE" "$TARGET"
 
 echo "== done =="
 ```
