@@ -104,6 +104,41 @@ chmod +x install.sh
 
 ---
 
+## Neovim / LazyVim設定
+
+このリポジトリでは、Neovimの設定をLazyVimベースで管理しています。
+
+### 構成
+
+- 実体ディレクトリ  
+  `~/workspace/dotfiles/.config/nvim/`
+
+- シンボリックリンク  
+  `~/.config/nvim`
+
+### セットアップ時の動作
+
+`install.sh` 実行時に以下が自動で行われます：
+
+- Homebrew経由でNeovimをインストール（未導入の場合）
+- LazyVimで利用する依存ツールをインストール（未導入の場合）
+  - `ripgrep`
+  - `fd`
+  - `fzf`
+  - `lazygit`
+  - `tree-sitter-cli`
+- `~/.config` ディレクトリの作成（存在しない場合）
+- Neovim設定ディレクトリのシンボリックリンク作成
+
+### 補足
+
+- Neovimは起動時に `~/.config/nvim/init.lua` を読み込みます
+- LazyVimのプラグイン本体は `~/.local/share/nvim` 配下にインストールされます
+- `lazy-lock.json` はプラグインのバージョン固定に使うため、Git管理対象とします
+- 初回起動後はNeovim内で `:Lazy sync`、`:Mason`、`:LazyHealth` を実行して状態を確認します
+
+---
+
 ## 運用方法
 
 ```bash

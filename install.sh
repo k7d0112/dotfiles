@@ -95,5 +95,56 @@ fi
 
 ln -snf "$SOURCE" "$TARGET"
 
+# ------------------------------
+# Neovim / LazyVim setup
+# ------------------------------
+
+# Neovim が未インストールの場合のみインストール
+if ! command -v nvim &> /dev/null; then
+  echo "Installing Neovim..."
+  brew install neovim
+fi
+
+# LazyVim で利用する依存ツールを未インストールの場合のみインストール
+if ! command -v rg &> /dev/null; then
+  echo "Installing ripgrep..."
+  brew install ripgrep
+fi
+
+if ! command -v fd &> /dev/null; then
+  echo "Installing fd..."
+  brew install fd
+fi
+
+if ! command -v fzf &> /dev/null; then
+  echo "Installing fzf..."
+  brew install fzf
+fi
+
+if ! command -v lazygit &> /dev/null; then
+  echo "Installing lazygit..."
+  brew install lazygit
+fi
+
+if ! command -v tree-sitter &> /dev/null; then
+  echo "Installing tree-sitter-cli..."
+  brew install tree-sitter-cli
+fi
+
+# 設定ディレクトリのシンボリックリンク作成
+echo "Linking Neovim config..."
+
+mkdir -p ~/.config
+
+TARGET="$HOME/.config/nvim"
+SOURCE="$DOTFILES_DIR/.config/nvim"
+
+if [ -e "$TARGET" ] && [ ! -L "$TARGET" ]; then
+  echo "Backing up Neovim config"
+  mv "$TARGET" "$TARGET.backup"
+fi
+
+ln -snf "$SOURCE" "$TARGET"
+
 echo "== done =="
 ```
