@@ -139,6 +139,58 @@ chmod +x install.sh
 
 ---
 
+## install.sh の拡張方法
+
+### ホームディレクトリのドットファイルを追加する場合
+
+`install.sh` の `FILES` 配列に追記するだけで、自動でシンボリックリンクが作成されます。
+
+```bash
+FILES=(
+  ".zshrc"
+  ".tmux.conf"  # 追加例
+)
+```
+
+追加する前に、対象ファイルを `~/workspace/dotfiles/` 配下に配置してください。
+
+### `.config` 配下の設定を追加する場合
+
+既存の starship / wezterm / nvim のブロックを参考に、以下のパターンで追記します。
+
+```bash
+# ① ツールのインストール確認（必要な場合）
+if ! command -v <tool> &> /dev/null; then
+  brew install <tool>
+fi
+
+# ② シンボリックリンク作成
+TARGET="$HOME/.config/<tool>"
+SOURCE="$DOTFILES_DIR/.config/<tool>"
+
+if [ -e "$TARGET" ] && [ ! -L "$TARGET" ]; then
+  echo "Backing up <tool> config"
+  mv "$TARGET" "$BACKUP_DIR/<tool>.$(date +%Y%m%d%H%M%S)"
+fi
+
+ln -snf "$SOURCE" "$TARGET"
+```
+
+追加する前に、設定ファイルを `~/workspace/dotfiles/.config/<tool>/` 配下に配置してください。
+
+### バックアップについて
+
+`install.sh` 実行時に既存ファイルが存在する場合、`~/.backup/` 配下にタイムスタンプ付きで保存されます。
+
+```
+~/.backup/.zshrc.20260505123456
+~/.backup/starship.toml.20260505123456
+```
+
+実行のたびに上書きされず履歴として蓄積されるため、必要に応じて手動で削除してください。
+
+---
+
 ## 運用方法
 
 ```bash

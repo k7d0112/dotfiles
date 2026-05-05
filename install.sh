@@ -1,21 +1,20 @@
----
-
-# ② install.sh（これだけコピペ）
-
-```bash
 #!/bin/bash
 
 set -e
 
 DOTFILES_DIR="$HOME/workspace/dotfiles"
+BACKUP_DIR="$HOME/.backup"
 
 echo "== dotfiles setup start =="
 
+mkdir -p "$BACKUP_DIR"
+
+# ------------------------------
+# Dotfiles symlink
+# ------------------------------
+
 FILES=(
   ".zshrc"
-  ".gitconfig"
-  ".vimrc"
-  ".tmux.conf"
 )
 
 for file in "${FILES[@]}"; do
@@ -24,7 +23,7 @@ for file in "${FILES[@]}"; do
 
   if [ -e "$TARGET" ] && [ ! -L "$TARGET" ]; then
     echo "Backing up $file"
-    mv "$TARGET" "$TARGET.backup"
+    mv "$TARGET" "$BACKUP_DIR/${file}.$(date +%Y%m%d%H%M%S)"
   fi
 
   echo "Linking $file"
@@ -49,13 +48,11 @@ fi
 # Starship setup
 # ------------------------------
 
-# starship が未インストールの場合のみインストール
 if ! command -v starship &> /dev/null; then
   echo "Installing starship..."
   brew install starship
 fi
 
-# 設定ファイルのシンボリックリンク作成
 echo "Linking starship config..."
 
 mkdir -p ~/.config
@@ -65,7 +62,7 @@ SOURCE="$DOTFILES_DIR/.config/starship.toml"
 
 if [ -e "$TARGET" ] && [ ! -L "$TARGET" ]; then
   echo "Backing up starship config"
-  mv "$TARGET" "$TARGET.backup"
+  mv "$TARGET" "$BACKUP_DIR/starship.toml.$(date +%Y%m%d%H%M%S)"
 fi
 
 ln -snf "$SOURCE" "$TARGET"
@@ -74,13 +71,11 @@ ln -snf "$SOURCE" "$TARGET"
 # WezTerm setup
 # ------------------------------
 
-# WezTerm が未インストールの場合のみインストール
 if ! command -v wezterm &> /dev/null; then
   echo "Installing WezTerm nightly..."
   brew install --cask wezterm@nightly
 fi
 
-# 設定ファイルのシンボリックリンク作成
 echo "Linking WezTerm config..."
 
 mkdir -p ~/.config
@@ -90,7 +85,7 @@ SOURCE="$DOTFILES_DIR/.config/wezterm"
 
 if [ -e "$TARGET" ] && [ ! -L "$TARGET" ]; then
   echo "Backing up wezterm config"
-  mv "$TARGET" "$TARGET.backup"
+  mv "$TARGET" "$BACKUP_DIR/wezterm.$(date +%Y%m%d%H%M%S)"
 fi
 
 ln -snf "$SOURCE" "$TARGET"
@@ -99,13 +94,11 @@ ln -snf "$SOURCE" "$TARGET"
 # Neovim / LazyVim setup
 # ------------------------------
 
-# Neovim が未インストールの場合のみインストール
 if ! command -v nvim &> /dev/null; then
   echo "Installing Neovim..."
   brew install neovim
 fi
 
-# LazyVim で利用する依存ツールを未インストールの場合のみインストール
 if ! command -v rg &> /dev/null; then
   echo "Installing ripgrep..."
   brew install ripgrep
@@ -131,7 +124,6 @@ if ! command -v tree-sitter &> /dev/null; then
   brew install tree-sitter-cli
 fi
 
-# 設定ディレクトリのシンボリックリンク作成
 echo "Linking Neovim config..."
 
 mkdir -p ~/.config
@@ -141,10 +133,9 @@ SOURCE="$DOTFILES_DIR/.config/nvim"
 
 if [ -e "$TARGET" ] && [ ! -L "$TARGET" ]; then
   echo "Backing up Neovim config"
-  mv "$TARGET" "$TARGET.backup"
+  mv "$TARGET" "$BACKUP_DIR/nvim.$(date +%Y%m%d%H%M%S)"
 fi
 
 ln -snf "$SOURCE" "$TARGET"
 
 echo "== done =="
-```
